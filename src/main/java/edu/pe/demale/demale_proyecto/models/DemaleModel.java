@@ -1,19 +1,19 @@
 package edu.pe.demale.demale_proyecto.models;
 
-import jakarta.persistence.*; 
-import java.time.LocalDateTime; 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-@Entity 
-@Table(name = "product_movements") 
-public class DemaleModel { 
+@Entity
+@Table(name = "product_movements")
+public class DemaleModel {
 
-    @Id 
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // Campos que corresponden a las columnas del prototipo:
     // CLIENTE
-    @Column(name = "client_name", nullable = false) 
+    @Column(name = "client_name", nullable = false)
     private String clientName;
 
     // PRODUCTO
@@ -36,24 +36,23 @@ public class DemaleModel {
     @Column(name = "destination", nullable = false)
     private String destination;
 
-    // ESTADO 
+    // ESTADO
     @Column(name = "status", nullable = false)
     private String status;
 
     // CHOFER
-    @Column(name = "driver_name") 
+    @Column(name = "driver_name")
     private String driverName;
 
     // VEHICULO
-    @Column(name = "vehicle_plate") 
+    @Column(name = "vehicle_plate")
     private String vehiclePlate;
 
-   
     public DemaleModel() {
     }
 
-    
-    public DemaleModel(String clientName, String productName, String category, LocalDateTime entryDate, String collectionPoint, String destination, String status, String driverName, String vehiclePlate) {
+    public DemaleModel(String clientName, String productName, String category, LocalDateTime entryDate,
+            String collectionPoint, String destination, String status, String driverName, String vehiclePlate) {
         this.clientName = clientName;
         this.productName = productName;
         this.category = category;
