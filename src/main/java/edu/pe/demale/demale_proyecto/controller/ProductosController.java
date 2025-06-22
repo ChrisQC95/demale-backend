@@ -3,7 +3,7 @@ package edu.pe.demale.demale_proyecto.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.pe.demale.demale_proyecto.models.Productos;
-import edu.pe.demale.demale_proyecto.services.ProductoService;
+import edu.pe.demale.demale_proyecto.service.ProductoService;
 
 import java.util.ArrayList;
 import java.util.Optional;

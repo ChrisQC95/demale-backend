@@ -6,7 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoClienteRepository extends JpaRepository<TipoCliente, Integer> {
-    // Puedes añadir métodos de consulta personalizados aquí si los necesitas
-    // Ejemplo:
-    // Optional<TipoCliente> findByTipoCliente(String tipoCliente);
 }

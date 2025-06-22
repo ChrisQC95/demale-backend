@@ -1,7 +1,7 @@
 package edu.pe.demale.demale_proyecto.service;
 
-import edu.pe.demale.demale_proyecto.models.TipoCliente; // Ajusta este import a tu paquete 'models'
-import edu.pe.demale.demale_proyecto.repositories.TipoClienteRepository; // Ajusta este import a tu paquete 'repositories'
+import edu.pe.demale.demale_proyecto.models.TipoCliente;
+import edu.pe.demale.demale_proyecto.repositories.TipoClienteRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

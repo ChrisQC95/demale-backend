@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import lombok.Data; // Requiere la dependencia Lombok en tu pom.xml
+import lombok.Data;
 
-@Data // Anotación de Lombok para generar getters, setters, toString, equals y
-      // hashCode
+@Data
 public class ClienteRegistroRequest {
 
     @Size(max = 100, message = "Los nombres no pueden exceder los 100 caracteres")
@@ -21,7 +20,7 @@ public class ClienteRegistroRequest {
     private String razonSocial;
 
     @NotNull(message = "El tipo de documento es obligatorio")
-    private Integer idTipoDoc; // ID del TipoDocumento
+    private Integer idTipoDoc;
 
     @NotBlank(message = "El número de documento es obligatorio")
     @Size(max = 20, message = "El número de documento no puede exceder los 20 caracteres")
@@ -34,9 +33,8 @@ public class ClienteRegistroRequest {
     @Size(max = 100, message = "El correo electrónico no puede exceder los 100 caracteres")
     private String correo;
 
-    // Datos de Dirección (opcionales al registrar, se pueden añadir después)
-    private Integer idDistrito; // ID del Distrito, puede ser nulo
-    private Integer idTipoVia; // ID del TipoVia, puede ser nulo
+    private Integer idDistrito;
+    private Integer idTipoVia;
 
     @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
     private String direccion;
@@ -44,7 +42,6 @@ public class ClienteRegistroRequest {
     @Size(max = 50, message = "El número municipal no puede exceder los 50 caracteres")
     private String nMunicipal;
 
-    // Datos de Cliente
     @NotNull(message = "El tipo de cliente es obligatorio")
-    private Integer idTipoCliente; // ID del TipoCliente
+    private Integer idTipoCliente;
 }

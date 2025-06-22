@@ -8,26 +8,25 @@ import edu.pe.demale.demale_proyecto.service.TipoDocumentoService;
 import edu.pe.demale.demale_proyecto.service.TipoClienteService;
 import edu.pe.demale.demale_proyecto.service.DistritoService;
 import edu.pe.demale.demale_proyecto.service.TipoViaService;
-import edu.pe.demale.demale_proyecto.models.TipoDocumento; // Asume la ubicación de tu entidad
-import edu.pe.demale.demale_proyecto.models.TipoCliente; // Asume la ubicación de tu entidad
-import edu.pe.demale.demale_proyecto.models.Distrito; // Asume la ubicación de tu entidad
+import edu.pe.demale.demale_proyecto.models.TipoDocumento;
+import edu.pe.demale.demale_proyecto.models.TipoCliente;
+import edu.pe.demale.demale_proyecto.models.Distrito;
 import edu.pe.demale.demale_proyecto.models.TipoVia;
 
-import jakarta.validation.Valid; // Importante para activar la validación en el DTO
+import jakarta.validation.Valid;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "http://localhost:4200") // Opcional si ya tienes CORS
-// global en application.properties
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
-    private final ClienteService clienteService; // Inyección de dependencia del servicio
+    private final ClienteService clienteService;
     private final TipoDocumentoService tipoDocumentoService;
     private final TipoClienteService tipoClienteService;
     private final DistritoService distritoService;
@@ -46,14 +45,6 @@ public class ClienteController {
         this.tipoViaService = tipoViaService;
     }
 
-    /**
-     * Endpoint para registrar un nuevo cliente.
-     * Se accede a través de POST /api/clientes/registrar
-     *
-     * @param request El DTO ClienteRegistroRequest con los datos del nuevo cliente.
-     * @return ResponseEntity con ClienteResponse si el registro es exitoso, o un
-     *         error.
-     */
     @PostMapping("/registrar")
     public ResponseEntity<ClienteResponse> registrarCliente(@Valid @RequestBody ClienteRegistroRequest request) {
         try {
@@ -72,29 +63,37 @@ public class ClienteController {
 
     @GetMapping("/tipos-documento")
     public ResponseEntity<List<TipoDocumento>> getAllTiposDocumento() {
-        List<TipoDocumento> tipos = tipoDocumentoService.findAll(); // O el método que uses para traer todos
+        List<TipoDocumento> tipos = tipoDocumentoService.findAll();
         return new ResponseEntity<>(tipos, HttpStatus.OK);
     }
 
     @GetMapping("/tipos-cliente")
     public ResponseEntity<List<TipoCliente>> getAllTiposCliente() {
-        List<TipoCliente> tipos = tipoClienteService.findAll(); // O el método que uses para traer todos
+        List<TipoCliente> tipos = tipoClienteService.findAll();
         return new ResponseEntity<>(tipos, HttpStatus.OK);
     }
 
     @GetMapping("/distritos")
     public ResponseEntity<List<Distrito>> getAllDistritos() {
-        List<Distrito> distritos = distritoService.findAll(); // O el método que uses para traer todos
+        List<Distrito> distritos = distritoService.findAll();
         return new ResponseEntity<>(distritos, HttpStatus.OK);
     }
 
     @GetMapping("/tipos-via")
     public ResponseEntity<List<TipoVia>> getAllTiposVia() {
-        List<TipoVia> tipos = tipoViaService.findAll(); // O el método que uses para traer todos
+        List<TipoVia> tipos = tipoViaService.findAll();
         return new ResponseEntity<>(tipos, HttpStatus.OK);
     }
-    // Puedes añadir más endpoints aquí, por ejemplo:
-    // @GetMapping("/{id}")
-    // public ResponseEntity<ClienteResponse> obtenerClientePorId(@PathVariable Long
-    // id) { ... }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ClienteResponse>> buscarClientes(@RequestParam String query) {
+        try {
+            List<ClienteResponse> clientes = clienteService.buscarClientes(query);
+            return new ResponseEntity<>(clientes, HttpStatus.OK);
+        } catch (Exception e) {
+            // Un log del error aquí es útil
+            System.err.println("Error al buscar clientes: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

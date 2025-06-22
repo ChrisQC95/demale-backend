@@ -8,8 +8,8 @@ public class RucResponse {
     private String razonSocial;
     private String nombreComercial;
     private String direccion;
-    private String estado; // Por ejemplo, "ACTIVO"
-    private String condicion; // Por ejemplo, "HABIDO"
+    private String estado;
+    private String condicion;
     private Boolean success;
     private String message;
 }

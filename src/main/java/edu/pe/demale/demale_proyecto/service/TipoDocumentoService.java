@@ -1,7 +1,7 @@
-package edu.pe.demale.demale_proyecto.service; // Ajusta este paquete
+package edu.pe.demale.demale_proyecto.service;
 
-import edu.pe.demale.demale_proyecto.models.TipoDocumento; // Ajusta el paquete de tu entidad
-import edu.pe.demale.demale_proyecto.repositories.TipoDocumentoRepository; // Ajusta el paquete de tu repositorio
+import edu.pe.demale.demale_proyecto.models.TipoDocumento;
+import edu.pe.demale.demale_proyecto.repositories.TipoDocumentoRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

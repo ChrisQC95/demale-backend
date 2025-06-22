@@ -1,148 +1,194 @@
 package edu.pe.demale.demale_proyecto.models;
 
-import java.sql.Date;
-
-import jakarta.annotation.Generated;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.math.BigDecimal; // Importar para decimal, que es más preciso que double para monetario/medidas
+import java.time.LocalDate; // Usar LocalDate para fechas modernas
+// NO ES NECESARIO java.sql.Date si usas LocalDate
 
 @Entity
-@Table(name = "productos")
+@Table(name = "producto") // Asegúrate de que el nombre de la tabla sea 'producto' (singular)
 public class Productos {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int IdProducto;
-    @Column
-    private String Producto;
-    @Column
-    private double Alto;
-    @Column
-    private double Ancho;
-    @Column
-    private double Largo;
-    @Column
-    private double Peso;
-    @Column
-    private Date FechIngreso;
-    @Column
-    private Date FechLlegada;
-    @Column
-    private int IdPuntoAcopio;
-    @Column
-    private int IdTipoProducto;
-    @Column
-    private int IdCliente;
-    @Column
-    private int IdEstadoEnvio;
-    @Column
-    private int IdDistrito;
+    @Column(name = "IdProducto") // Asegúrate que el nombre de la columna sea IdProducto
+    private Integer idProducto; // Usar Integer para permitir nulls si auto_increment falla o en otros contextos
 
-    public int getIdProducto() {
-        return IdProducto;
+    @Column(name = "Producto", nullable = false, length = 50) // Asegúrate que el nombre de la columna sea Producto
+    private String producto; // Nombre del producto
+
+    @Column(name = "Alto", nullable = false, precision = 10, scale = 2) // Mapeo a decimal(10,2)
+    private BigDecimal alto;
+
+    @Column(name = "Ancho", nullable = false, precision = 10, scale = 2) // Mapeo a decimal(10,2)
+    private BigDecimal ancho;
+
+    @Column(name = "Largo", nullable = false, precision = 10, scale = 2) // Mapeo a decimal(10,2)
+    private BigDecimal largo;
+
+    @Column(name = "Peso", nullable = false, precision = 10, scale = 2) // Mapeo a decimal(10,2)
+    private BigDecimal peso;
+
+    @Column(name = "FechIngreso", nullable = false)
+    private LocalDate fechIngreso; // Usar LocalDate para java.time
+
+    @Column(name = "FechLlegada") // Puede ser null
+    private LocalDate fechLlegada; // Usar LocalDate para java.time
+
+    // --- RELACIONES CON OTRAS ENTIDADES ---
+    // Es CRÍTICO que estas sean referencias a las ENTIDADES, no solo al ID int
+    // Si no tienes estas clases de entidad aún, deberás crearlas también.
+
+    @ManyToOne // Un producto tiene un PuntoAcopio
+    @JoinColumn(name = "IdPuntoAcopio", nullable = false) // Mapea a la columna IdPuntoAcopio en la tabla producto
+    private PuntoAcopio puntoAcopio; // Campo de tipo PuntoAcopio
+
+    @ManyToOne // Un producto tiene un TipoProducto
+    @JoinColumn(name = "IdTipoProducto", nullable = false)
+    private TipoProducto tipoProducto;
+
+    @ManyToOne // Un producto pertenece a un Cliente
+    @JoinColumn(name = "IdCliente", nullable = false)
+    private Cliente cliente;
+
+    @ManyToOne // Un producto tiene un EstadoEnvio
+    @JoinColumn(name = "IdEstadoEnvio", nullable = false)
+    private EstadoEnvio estadoEnvio;
+
+    @ManyToOne // Un producto tiene un Distrito de destino
+    @JoinColumn(name = "IdDistrito", nullable = false)
+    private Distrito distrito;
+
+    // --- NUEVA COLUMNA PARA LA GUÍA DE REMISIÓN ---
+    @Lob // Indica que es un Large Object (BLOB o CLOB)
+    @Column(name = "guiaRemisión") // Nombre de la columna en la base de datos
+    private byte[] guiaRemision; // Para almacenar el PDF (BLOB)
+
+    @ManyToOne // Un producto es registrado por un Trabajador
+    @JoinColumn(name = "IdTrabajador", nullable = false) // Asumo que hay una columna IdTrabajador en la tabla producto
+    private Trabajador trabajador;
+
+    // --- Getters y Setters ---
+    // (Puedes generarlos automáticamente con tu IDE o Lombok)
+
+    public Integer getIdProducto() {
+        return idProducto;
     }
 
-    public void setIdProducto(int idProducto) {
-        IdProducto = idProducto;
+    public void setIdProducto(Integer idProducto) {
+        this.idProducto = idProducto;
     }
 
     public String getProducto() {
-        return Producto;
+        return producto;
     }
 
     public void setProducto(String producto) {
-        Producto = producto;
+        this.producto = producto;
     }
 
-    public double getAlto() {
-        return Alto;
+    public BigDecimal getAlto() {
+        return alto;
     }
 
-    public void setAlto(double alto) {
-        Alto = alto;
+    public void setAlto(BigDecimal alto) {
+        this.alto = alto;
     }
 
-    public double getAncho() {
-        return Ancho;
+    public BigDecimal getAncho() {
+        return ancho;
     }
 
-    public void setAncho(double ancho) {
-        Ancho = ancho;
+    public void setAncho(BigDecimal ancho) {
+        this.ancho = ancho;
     }
 
-    public double getLargo() {
-        return Largo;
+    public BigDecimal getLargo() {
+        return largo;
     }
 
-    public void setLargo(double largo) {
-        Largo = largo;
+    public void setLargo(BigDecimal largo) {
+        this.largo = largo;
     }
 
-    public double getPeso() {
-        return Peso;
+    public BigDecimal getPeso() {
+        return peso;
     }
 
-    public void setPeso(double peso) {
-        Peso = peso;
+    public void setPeso(BigDecimal peso) {
+        this.peso = peso;
     }
 
-    public Date getFechIngreso() {
-        return FechIngreso;
+    public LocalDate getFechIngreso() {
+        return fechIngreso;
     }
 
-    public void setFechIngreso(Date fechIngreso) {
-        FechIngreso = fechIngreso;
+    public void setFechIngreso(LocalDate fechIngreso) {
+        this.fechIngreso = fechIngreso;
     }
 
-    public Date getFechLlegada() {
-        return FechLlegada;
+    public LocalDate getFechLlegada() {
+        return fechLlegada;
     }
 
-    public void setFechLlegada(Date fechLlegada) {
-        FechLlegada = fechLlegada;
+    public void setFechLlegada(LocalDate fechLlegada) {
+        this.fechLlegada = fechLlegada;
     }
 
-    public int getIdPuntoAcopio() {
-        return IdPuntoAcopio;
+    public PuntoAcopio getPuntoAcopio() {
+        return puntoAcopio;
     }
 
-    public void setIdPuntoAcopio(int idPuntoAcopio) {
-        IdPuntoAcopio = idPuntoAcopio;
+    public void setPuntoAcopio(PuntoAcopio puntoAcopio) {
+        this.puntoAcopio = puntoAcopio;
     }
 
-    public int getIdTipoProducto() {
-        return IdTipoProducto;
+    public TipoProducto getTipoProducto() {
+        return tipoProducto;
     }
 
-    public void setIdTipoProducto(int idTipoProducto) {
-        IdTipoProducto = idTipoProducto;
+    public void setTipoProducto(TipoProducto tipoProducto) {
+        this.tipoProducto = tipoProducto;
     }
 
-    public int getIdCliente() {
-        return IdCliente;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setIdCliente(int idCliente) {
-        IdCliente = idCliente;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
-    public int getIdEstadoEnvio() {
-        return IdEstadoEnvio;
+    public EstadoEnvio getEstadoEnvio() {
+        return estadoEnvio;
     }
 
-    public void setIdEstadoEnvio(int idEstadoEnvio) {
-        IdEstadoEnvio = idEstadoEnvio;
+    public void setEstadoEnvio(EstadoEnvio estadoEnvio) {
+        this.estadoEnvio = estadoEnvio;
     }
 
-    public int getIdDistrito() {
-        return IdDistrito;
+    public Distrito getDistrito() {
+        return distrito;
     }
 
-    public void setIdDistrito(int idDistrito) {
-        IdDistrito = idDistrito;
+    public void setDistrito(Distrito distrito) {
+        this.distrito = distrito;
+    }
+
+    public byte[] getGuiaRemision() {
+        return guiaRemision;
+    }
+
+    public void setGuiaRemision(byte[] guiaRemision) {
+        this.guiaRemision = guiaRemision;
+    }
+
+    public Trabajador getTrabajador() { // Getter para trabajador
+        return trabajador;
+    }
+
+    public void setTrabajador(Trabajador trabajador) { // Setter para trabajador
+        this.trabajador = trabajador;
     }
 
 }

@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoViaRepository extends JpaRepository<TipoVia, Integer> {
-    // Métodos personalizados si son necesarios
 }

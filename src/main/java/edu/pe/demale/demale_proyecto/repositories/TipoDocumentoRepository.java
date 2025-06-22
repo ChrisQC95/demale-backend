@@ -6,9 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoDocumentoRepository extends JpaRepository<TipoDocumento, Integer> {
-    // Spring Data JPA generará automáticamente los métodos CRUD básicos para
-    // TipoDocumento
-    // Puedes añadir métodos personalizados aquí si necesitas consultas específicas,
-    // por ejemplo:
-    // Optional<TipoDocumento> findByNombreDoc(String nombreDoc);
 }
