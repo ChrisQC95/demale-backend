@@ -94,6 +94,7 @@ public class ProductoService {
     @Transactional
     public ProductoResponse registrarProducto(ProductoRegistroRequest request, MultipartFile guiaRemisionFile)
             throws IOException {
+
         PuntoAcopio puntoAcopio = puntoAcopioRepository.findById(request.getIdPuntoAcopio())
                 .orElseThrow(() -> new RuntimeException(
                         "Punto de acopio no encontrado con ID: " + request.getIdPuntoAcopio()));
@@ -104,6 +105,7 @@ public class ProductoService {
 
         Cliente cliente = clienteRepository.findById(request.getIdCliente())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + request.getIdCliente()));
+
         EstadoEnvio estadoEnAlmacen = estadoEnvioRepository.findByEstado("En Almacén");
         if (estadoEnAlmacen == null) {
             throw new RuntimeException(
@@ -113,33 +115,46 @@ public class ProductoService {
         Distrito distritoDestino = distritoRepository.findById(request.getIdDistrito())
                 .orElseThrow(() -> new RuntimeException(
                         "Distrito de destino no encontrado con ID: " + request.getIdDistrito()));
+
         Trabajador trabajador = trabajadorRepository.findById(request.getIdTrabajador())
                 .orElseThrow(() -> new RuntimeException(
                         "Trabajador (Empleado) no encontrado con ID: " + request.getIdTrabajador()));
 
+        byte[] guiaRemisionBytes = null;
+        if (guiaRemisionFile != null && !guiaRemisionFile.isEmpty()) {
+            guiaRemisionBytes = guiaRemisionFile.getBytes();
+        }
+// ====== CAMBIO INICIO: Validar por TipoCliente, no por TipoDocumento ======
+        Integer idTipoCliente = cliente.getTipoCliente() != null ? cliente.getTipoCliente().getIdTipoCliente() : null;
+        final int ID_TIPO_CLIENTE_RUC = 2; // Ajusta este valor si tu tabla tiene otro ID para RUC/empresa
+
+        if (idTipoCliente == null) {
+            throw new RuntimeException("No se pudo obtener el tipo de cliente para el cliente con ID: " + request.getIdCliente());
+        }
+
+        if (idTipoCliente == ID_TIPO_CLIENTE_RUC) {
+            // Si el cliente es de tipo RUC/empresa, la guía de remisión es obligatoria
+            if (guiaRemisionBytes == null) {
+                throw new RuntimeException("La guía de remisión es obligatoria para clientes de tipo RUC/empresa.");
+            }
+        }
+// ====== CAMBIO FIN ======
         Productos producto = new Productos();
         producto.setProducto(request.getProducto());
         producto.setAlto(request.getAlto());
         producto.setAncho(request.getAncho());
         producto.setLargo(request.getLargo());
         producto.setPeso(request.getPeso());
-        producto.setFechIngreso(LocalDate.now());
-        producto.setFechLlegada(null);
+        producto.setFechIngreso(LocalDate.now()); // Fecha actual
+        producto.setFechLlegada(null); // Null
         producto.setPuntoAcopio(puntoAcopio);
         producto.setTipoProducto(tipoProducto);
         producto.setCliente(cliente);
         producto.setEstadoEnvio(estadoEnAlmacen);
         producto.setDistrito(distritoDestino);
         producto.setTrabajador(trabajador);
-
-        if (guiaRemisionFile != null && !guiaRemisionFile.isEmpty()) {
-            producto.setGuiaRemision(guiaRemisionFile.getBytes());
-        } else {
-            producto.setGuiaRemision(null);
-        }
-
+        producto.setGuiaRemision(guiaRemisionBytes);
         Productos productoGuardado = productosRepository.save(producto);
-
         return mapProductoToProductoResponse(productoGuardado);
     }
 
@@ -151,15 +166,7 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public byte[] downloadGuiaRemision(Integer idProducto) {
-        Productos producto = productosRepository.findById(idProducto)
-                .orElseThrow(() -> new RuntimeException(
-                        "Producto no encontrado para descargar guía de remisión con ID: " + idProducto));
-        return producto.getGuiaRemision();
-    }
-
-    private ProductoResponse mapProductoToProductoResponse(Productos producto) {
+    public ProductoResponse mapProductoToProductoResponse(Productos producto) {
         ProductoResponse response = new ProductoResponse();
         response.setIdProducto(producto.getIdProducto());
         response.setProducto(producto.getProducto());
