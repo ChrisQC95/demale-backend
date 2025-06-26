@@ -50,12 +50,25 @@ public class ProductoService {
         return (ArrayList<Productos>) productosRepository.findAll();
     }
 
+    public List<Productos> listarProductosPorEstadoEnvio() {
+        return productosRepository.findByEstadoEnvio_IdEstadoEnvio(1);
+    }
+
     public Optional<Productos> obtenerProductoXID(int id) {
         return productosRepository.findById(id);
     }
 
     public Productos grabarProductos(Productos obj) {
         return productosRepository.save(obj);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductoResponse> obtenerProductosPorClienteYEstadoEnAlmacen(Integer idCliente) {
+        List<Productos> productos = productosRepository.findByClienteIdClienteAndEstadoEnvio_IdEstadoEnvio(idCliente,
+                1);
+        return productos.stream()
+                .map(this::mapProductoToProductoResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -124,12 +137,13 @@ public class ProductoService {
         if (guiaRemisionFile != null && !guiaRemisionFile.isEmpty()) {
             guiaRemisionBytes = guiaRemisionFile.getBytes();
         }
-// ====== CAMBIO INICIO: Validar por TipoCliente, no por TipoDocumento ======
+        // ====== CAMBIO INICIO: Validar por TipoCliente, no por TipoDocumento ======
         Integer idTipoCliente = cliente.getTipoCliente() != null ? cliente.getTipoCliente().getIdTipoCliente() : null;
         final int ID_TIPO_CLIENTE_RUC = 2; // Ajusta este valor si tu tabla tiene otro ID para RUC/empresa
 
         if (idTipoCliente == null) {
-            throw new RuntimeException("No se pudo obtener el tipo de cliente para el cliente con ID: " + request.getIdCliente());
+            throw new RuntimeException(
+                    "No se pudo obtener el tipo de cliente para el cliente con ID: " + request.getIdCliente());
         }
 
         if (idTipoCliente == ID_TIPO_CLIENTE_RUC) {
@@ -138,7 +152,7 @@ public class ProductoService {
                 throw new RuntimeException("La guía de remisión es obligatoria para clientes de tipo RUC/empresa.");
             }
         }
-// ====== CAMBIO FIN ======
+        // ====== CAMBIO FIN ======
         Productos producto = new Productos();
         producto.setProducto(request.getProducto());
         producto.setAlto(request.getAlto());

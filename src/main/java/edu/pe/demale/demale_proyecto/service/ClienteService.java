@@ -39,7 +39,8 @@ public class ClienteService {
 
     @Transactional
     public ClienteResponse registrarCliente(ClienteRegistroRequest request) {
-        System.out.println("DEBUG: Numero de documento recibido en el servicio: " + request.getNumeroDocumento());
+        // System.out.println("DEBUG: Numero de documento recibido en el servicio: " +
+        // request.getNumeroDocumento());
         TipoDocumento tipoDocumento = tipoDocumentoRepository.findById(request.getIdTipoDoc())
                 .orElseThrow(() -> new RuntimeException(
                         "Tipo de documento no encontrado con ID: " + request.getIdTipoDoc()));

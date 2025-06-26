@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface IProductosRepository extends JpaRepository<Productos, Integer> {
     List<Productos> findByClienteIdCliente(Integer idCliente);
+
+    List<Productos> findByEstadoEnvio_IdEstadoEnvio(Integer idEstadoEnvio);
+
+    List<Productos> findByClienteIdClienteAndEstadoEnvio_IdEstadoEnvio(Integer idCliente, Integer idEstadoEnvio);
 }
