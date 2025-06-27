@@ -14,6 +14,7 @@ public class EstadoEnvio {
     @Column(name = "Estado", nullable = false, length = 50) // Por ejemplo: "En Almacén", "En Tránsito", "Entregado"
     private String estado;
 
+
     // Getters y Setters
     public Integer getIdEstadoEnvio() {
         return idEstadoEnvio;

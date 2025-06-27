@@ -40,7 +40,7 @@ public class Productos {
     // Si no tienes estas clases de entidad aún, deberás crearlas también.
 
     @ManyToOne // Un producto tiene un PuntoAcopio
-    @JoinColumn(name = "IdPuntoAcopio", nullable = false) // Mapea a la columna IdPuntoAcopio en la tabla producto
+    @JoinColumn(name = "IdPuntoAcopio") // Mapea a la columna IdPuntoAcopio en la tabla producto
     private PuntoAcopio puntoAcopio; // Campo de tipo PuntoAcopio
 
     @ManyToOne // Un producto tiene un TipoProducto
@@ -52,7 +52,7 @@ public class Productos {
     private Cliente cliente;
 
     @ManyToOne // Un producto tiene un EstadoEnvio
-    @JoinColumn(name = "IdEstadoEnvio", nullable = false)
+    @JoinColumn(name = "IdEstadoEnvio")
     private EstadoEnvio estadoEnvio;
 
     @ManyToOne // Un producto tiene un Distrito de destino

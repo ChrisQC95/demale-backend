@@ -128,4 +128,37 @@ public class ProductosController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+            // ...existing code...
+        @GetMapping("/historial")
+        public List<ProductoResponse> listarTodos() {
+            return productoService.listarTodos();
+        }
+
+        @GetMapping("/historial/punto-acopio/{id}")
+        public List<ProductoResponse> listarPorPuntoAcopio(@PathVariable Integer id) {
+            return productoService.listarPorPuntoAcopio(id);
+        }
+
+        @GetMapping("/historial/estado-envio/{id}")
+        public List<ProductoResponse> listarPorEstadoEnvio(@PathVariable Integer id) {
+            return productoService.listarPorEstadoEnvio(id);
+        }
+
+        @GetMapping("/historial/filtro")
+        public List<ProductoResponse> filtrarProductos(
+            @RequestParam(required = false) Integer idPuntoAcopio,
+            @RequestParam(required = false) Integer idEstadoEnvio
+        ) {
+            if (idPuntoAcopio != null && idEstadoEnvio != null) {
+                return productoService.listarPorPuntoAcopioYEstado(idPuntoAcopio, idEstadoEnvio);
+            } else if (idPuntoAcopio != null) {
+                return productoService.listarPorPuntoAcopio(idPuntoAcopio);
+            } else if (idEstadoEnvio != null) {
+                return productoService.listarPorEstadoEnvio(idEstadoEnvio);
+            } else {
+                return productoService.listarTodos();
+            }
+}
+
 }

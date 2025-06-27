@@ -45,6 +45,35 @@ public class ProductoService {
         this.distritoRepository = distritoRepository;
         this.trabajadorRepository = trabajadorRepository;
     }
+    //MOSTRAR TODOS LOS PRODUCTOS
+    public List<ProductoResponse> listarTodos() {
+        return productosRepository.findAll()
+            .stream()
+            .map(this::mapProductoToProductoResponse)
+            .collect(Collectors.toList());
+    }
+    //MOSTRAR POR PUNTO DE ACOPIO
+    public List<ProductoResponse> listarPorPuntoAcopio(Integer idPuntoAcopio) {
+    return productosRepository.findByPuntoAcopioIdPuntoAcopio(idPuntoAcopio)
+        .stream()
+        .map(this::mapProductoToProductoResponse)
+        .collect(Collectors.toList());
+    }
+    //MOSTRAR POR ESTADO DE ENVIO
+    public List<ProductoResponse> listarPorEstadoEnvio(Integer idEstadoEnvio) {
+        return productosRepository.findByEstadoEnvioIdEstadoEnvio(idEstadoEnvio)
+            .stream()
+            .map(this::mapProductoToProductoResponse)
+            .collect(Collectors.toList());
+    }
+    //MOSTRAR POR PUNTO DE ACOPIO Y ESTADO DE ENVIO
+    public List<ProductoResponse> listarPorPuntoAcopioYEstado(Integer idPuntoAcopio, Integer idEstadoEnvio) {
+        return productosRepository.findByPuntoAcopioIdPuntoAcopioAndEstadoEnvioIdEstadoEnvio(idPuntoAcopio, idEstadoEnvio)
+            .stream()
+            .map(this::mapProductoToProductoResponse)
+            .collect(Collectors.toList());
+    }
+
 
     public ArrayList<Productos> listarProductos() {
         return (ArrayList<Productos>) productosRepository.findAll();
@@ -57,6 +86,8 @@ public class ProductoService {
     public Productos grabarProductos(Productos obj) {
         return productosRepository.save(obj);
     }
+
+
 
     @Transactional
     public Productos actualizaProductos(Productos obj, int id) {
