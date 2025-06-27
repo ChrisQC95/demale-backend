@@ -12,4 +12,10 @@ public interface IProductosRepository extends JpaRepository<Productos, Integer> 
     List<Productos> findByPuntoAcopioIdPuntoAcopio(Integer idPuntoAcopio);
     List<Productos> findByEstadoEnvioIdEstadoEnvio(Integer idEstadoEnvio);
     List<Productos> findByPuntoAcopioIdPuntoAcopioAndEstadoEnvioIdEstadoEnvio(Integer idPuntoAcopio, Integer idEstadoEnvio);
+
+
+    List<Productos> findByEstadoEnvio_IdEstadoEnvio(Integer idEstadoEnvio);
+
+    List<Productos> findByClienteIdClienteAndEstadoEnvio_IdEstadoEnvio(Integer idCliente, Integer idEstadoEnvio);
+
 }

@@ -73,6 +73,24 @@ public class ProductosController {
         return new ResponseEntity<>(responses, HttpStatus.OK); // 200 OK
     }
 
+    @GetMapping("/en-almacen") // Listar todos los productos activos en almacén
+    public ResponseEntity<List<ProductoResponse>> listarEnAlmacen() {
+        List<Productos> productos = this.productoService.listarProductosPorEstadoEnvio();
+        List<ProductoResponse> responses = productos.stream()
+                .map(productoService::mapProductoToProductoResponse)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(responses, HttpStatus.OK); // 200 OK
+    }
+
+    @GetMapping("/cliente/{idCliente}/en-almacen")
+    public ResponseEntity<List<ProductoResponse>> listarProductosPorClienteYEnAlmacen(@PathVariable Integer idCliente) {
+        List<ProductoResponse> productos = this.productoService.obtenerProductosPorClienteYEstadoEnAlmacen(idCliente);
+        if (productos.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content si no hay productos
+        }
+        return new ResponseEntity<>(productos, HttpStatus.OK); // 200 OK
+    }
+
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProductoResponse> getProductoXID(@PathVariable("id") int id) { // CORREGIDO:
                                                                                          // @PathVariable("id")
