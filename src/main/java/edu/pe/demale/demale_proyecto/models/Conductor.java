@@ -11,7 +11,7 @@ public class Conductor {
     private Integer idConductor;
 
     @OneToOne
-    @MapsId  // Esto hace que use el mismo Id que Persona
+    @MapsId // Esto hace que use el mismo Id que Persona
     @JoinColumn(name = "IdConductor")
     private Persona persona;
 
@@ -22,6 +22,16 @@ public class Conductor {
     @JoinColumn(name = "IdRol", nullable = false)
     private Rol rol;
 
+    public Conductor() {
+    }
+
+    // Constructor con todos los campos (opcional, pero útil)
+    public Conductor(Integer idConductor, String licencia, Persona persona, Rol rol) {
+        this.idConductor = idConductor;
+        this.licencia = licencia;
+        this.persona = persona;
+        this.rol = rol;
+    }
     // Getters y setters
 
     public Integer getIdConductor() {

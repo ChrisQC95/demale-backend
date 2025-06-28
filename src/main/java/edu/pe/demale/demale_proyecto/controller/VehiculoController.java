@@ -1,5 +1,6 @@
 package edu.pe.demale.demale_proyecto.controller;
 
+import edu.pe.demale.demale_proyecto.dto.VehiculoDropdownDto;
 import edu.pe.demale.demale_proyecto.models.Vehiculo;
 import edu.pe.demale.demale_proyecto.service.VehiculoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,5 +41,10 @@ public class VehiculoController {
     @DeleteMapping("/{id}")
     public void eliminarVehiculo(@PathVariable Integer id) {
         vehiculoService.eliminarVehiculo(id);
+    }
+
+    @GetMapping("/dropdown") // Este es el nuevo endpoint
+    public List<VehiculoDropdownDto> getVehiculosForDropdown() {
+        return vehiculoService.obtenerTodosLosVehiculosParaDropdown();
     }
 }
