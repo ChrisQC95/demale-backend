@@ -43,6 +43,8 @@ public class EnvioService {
         nuevoEnvio.setObservacion(envioDto.getObservacion());
         nuevoEnvio.setIdEstadoEnvio(ESTADO_EN_TRANSITO_ID);
         nuevoEnvio.setFechLlegada(null);
+        nuevoEnvio.setIdPuntoAcopio(envioDto.getIdAcopio());
+        nuevoEnvio.setIdDistrito(envioDto.getIdDestino());
 
         Envio envioGuardado = envioRepository.save(nuevoEnvio);
 
@@ -65,16 +67,7 @@ public class EnvioService {
                 // Establecer las entidades relacionadas. Esto es clave.
                 detalleEnvio.setEnvio(envioGuardado);
                 detalleEnvio.setProducto(producto);
-
-                // Las propiedades de la clave compuesta (idEnvio, idProducto)
-                // se establecerán automáticamente por los setters de DetalleEnvio.setEnvio() y
-                // .setProducto()
-                // gracias a las anotaciones @MapsId en DetalleEnvio.
-
-                // Guardar la entidad DetalleEnvio
                 detalleEnvioRepository.save(detalleEnvio);
-
-                // Actualizar el estado del producto
                 productoRepository.actualizarEstadoProducto(idProducto, ESTADO_EN_TRANSITO_ID);
             }
         } else {

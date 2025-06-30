@@ -24,6 +24,12 @@ public class Envio {
     @Column(name = "IdEstadoEnvio", nullable = false)
     private Integer idEstadoEnvio;
 
+    @Column(name = "IdPuntoAcopio", nullable = false)
+    private Integer idPuntoAcopio; // Mapea a la nueva columna IdPuntoAcopio
+
+    @Column(name = "IdDistrito", nullable = false)
+    private Integer idDistrito;
+
     @Column(name = "FechSalida", nullable = false)
     private Date fechSalida;
 
@@ -51,22 +57,27 @@ public class Envio {
     @JoinColumn(name = "IdEstadoEnvio", insertable = false, updatable = false)
     private EstadoEnvio estadoEnvio; // Asume que tienes una entidad EstadoEnvio
 
-    // Si quieres que DetalleEnvio sea bidireccional desde Envio
-    // @OneToMany(mappedBy = "envio", cascade = CascadeType.ALL, orphanRemoval =
-    // true)
-    // private List<DetalleEnvio> detalles;
+    @ManyToOne
+    @JoinColumn(name = "IdPuntoAcopio", insertable = false, updatable = false)
+    private PuntoAcopio puntoAcopio; // Asume que tienes una entidad PuntoAcopio
 
-    // Constructor sin argumentos
+    @ManyToOne
+    @JoinColumn(name = "IdDistrito", insertable = false, updatable = false)
+    private Distrito distrito;
+
     public Envio() {
     }
 
     // Constructor con campos requeridos (o todos, según tu preferencia)
-    public Envio(Integer idConductor, Integer idVehiculo, Integer idRuta, Integer idEstadoEnvio, Date fechSalida,
+    public Envio(Integer idConductor, Integer idVehiculo, Integer idRuta, Integer idEstadoEnvio, Integer idPuntoAcopio,
+            Integer idDistrito, Date fechSalida,
             String observacion) {
         this.idConductor = idConductor;
         this.idVehiculo = idVehiculo;
         this.idRuta = idRuta;
         this.idEstadoEnvio = idEstadoEnvio;
+        this.idPuntoAcopio = idPuntoAcopio;
+        this.idDistrito = idDistrito;
         this.fechSalida = fechSalida;
         this.observacion = observacion;
     }
@@ -110,6 +121,22 @@ public class Envio {
 
     public void setIdEstadoEnvio(Integer idEstadoEnvio) {
         this.idEstadoEnvio = idEstadoEnvio;
+    }
+
+    public Integer getIdPuntoAcopio() {
+        return idPuntoAcopio;
+    }
+
+    public void setIdPuntoAcopio(Integer idPuntoAcopio) {
+        this.idPuntoAcopio = idPuntoAcopio;
+    }
+
+    public Integer getIdDistrito() {
+        return idDistrito;
+    }
+
+    public void setIdDistrito(Integer idDistrito) {
+        this.idDistrito = idDistrito;
     }
 
     public Date getFechSalida() {
@@ -167,5 +194,21 @@ public class Envio {
 
     public void setEstadoEnvio(EstadoEnvio estadoEnvio) {
         this.estadoEnvio = estadoEnvio;
+    }
+
+    public PuntoAcopio getPuntoAcopio() {
+        return puntoAcopio;
+    }
+
+    public void setPuntoAcopio(PuntoAcopio puntoAcopio) {
+        this.puntoAcopio = puntoAcopio;
+    }
+
+    public Distrito getDistrito() {
+        return distrito;
+    }
+
+    public void setDistrito(Distrito distrito) {
+        this.distrito = distrito;
     }
 }

@@ -8,6 +8,8 @@ public class EnvioCreacionDto {
     private Integer idConductor;
     private Integer idVehiculo;
     private Integer idRuta;
+    private Integer idAcopio;
+    private Integer idDestino;
     private String fechSalida; // Formato "YYYY-MM-DD"
     private String observacion;
     private List<Integer> idProductosSeleccionados; // IDs de los productos marcados

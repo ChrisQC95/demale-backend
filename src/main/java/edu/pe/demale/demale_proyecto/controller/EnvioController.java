@@ -27,6 +27,8 @@ public class EnvioController {
         if (envioDto.getIdConductor() == null ||
                 envioDto.getIdVehiculo() == null ||
                 envioDto.getIdRuta() == null ||
+                envioDto.getIdAcopio() == null ||
+                envioDto.getIdDestino() == null ||
                 envioDto.getFechSalida() == null ||
                 envioDto.getIdProductosSeleccionados() == null ||
                 envioDto.getIdProductosSeleccionados().isEmpty()) {
