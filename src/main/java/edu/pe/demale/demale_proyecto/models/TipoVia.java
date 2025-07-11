@@ -1,7 +1,14 @@
 package edu.pe.demale.demale_proyecto.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tipoVia")
 public class TipoVia {

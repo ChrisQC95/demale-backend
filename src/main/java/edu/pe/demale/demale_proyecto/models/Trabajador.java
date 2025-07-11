@@ -1,8 +1,15 @@
 package edu.pe.demale.demale_proyecto.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate; // Para FechNacimiento
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "trabajador")
 public class Trabajador {
@@ -13,7 +20,6 @@ public class Trabajador {
 
     @OneToOne // Un trabajador tiene una Persona asociada
     @MapsId // Indica que idTrabajador es también la clave foránea y su valor se obtendrá de
-            // Persona
     @JoinColumn(name = "IdTrabajador") // La columna FK en 'trabajador' que apunta a 'persona' es 'IdTrabajador'
     private Persona persona; // El trabajador es una Persona
 

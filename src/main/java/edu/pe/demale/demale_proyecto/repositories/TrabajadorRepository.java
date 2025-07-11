@@ -10,3 +10,4 @@ import java.util.List;
 public interface TrabajadorRepository extends JpaRepository<Trabajador, Integer> {
     List<Trabajador> findByRol_IdRol(Integer idRol);
 }
+
