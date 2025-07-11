@@ -58,18 +58,26 @@ public class EnvioController {
         }
     }
 
-    @PutMapping("/{idEnvio}") // Maneja solicitudes PUT a /api/envios/{idEnvio}
+    @GetMapping("/{idEnvio}")
+    public ResponseEntity<EnvioListadoDto> obtenerEnvioPorId(@PathVariable Integer idEnvio) {
+        try {
+            EnvioListadoDto envioDto = envioService.obtenerEnvioPorId(idEnvio);
+            return new ResponseEntity<>(envioDto, HttpStatus.OK); // 200 OK
+        } catch (RuntimeException e) { // Captura la excepción si el envío no se encuentra
+            System.err.println("Error al obtener el envío por ID: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+        } catch (Exception e) { // Captura cualquier otra excepción
+            System.err.println("Error inesperado al obtener el envío por ID: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+        }
+    }
+
+    @PutMapping("/{idEnvio}")
     public ResponseEntity<EnvioListadoDto> actualizarEnvio(@PathVariable Integer idEnvio,
-            @RequestBody EnvioUpdateDto envioDto) { // <-- ¡Retorna EnvioListadoDto!
-        // Validar que el ID de la URL coincide con el ID del DTO (buena práctica)
+            @RequestBody EnvioUpdateDto envioDto) {
         if (envioDto.getIdEnvio() == null || !envioDto.getIdEnvio().equals(idEnvio)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // ID en URL y DTO no coinciden o falta ID
         }
-
-        // Validaciones básicas para los campos que no pueden ser nulos si se están
-        // actualizando
-        // (Estas validaciones asumen que todos estos campos son obligatorios para una
-        // actualización PUT completa)
         if (envioDto.getIdConductor() == null ||
                 envioDto.getIdVehiculo() == null ||
                 envioDto.getIdRuta() == null ||
@@ -77,7 +85,7 @@ public class EnvioController {
                 envioDto.getIdPuntoAcopio() == null ||
                 envioDto.getIdDistrito() == null ||
                 envioDto.getFechSalida() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Datos obligatorios faltantes
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         try {

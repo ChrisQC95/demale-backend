@@ -83,12 +83,6 @@ public class EnvioService {
     }
 
     public List<EnvioListadoDto> obtenerTodosLosEnvios() {
-        // Usamos findAll() de JpaRepository. JPA cargará las relaciones @ManyToOne
-        // automáticamente
-        // si se configuran con FetchType.EAGER o si se usan JOIN FETCH en una @Query
-        // personalizada.
-        // Por defecto, @ManyToOne es EAGER, así que debería cargar los objetos
-        // relacionados.
         List<Envio> envios = envioRepository.findAll();
         return envios.stream()
                 .map(this::mapToEnvioListadoDto)
@@ -101,16 +95,9 @@ public class EnvioService {
         dto.setFechSalida(envio.getFechSalida());
         dto.setFechLlegada(envio.getFechLlegada());
         dto.setObservacion(envio.getObservacion());
-
-        // Mapeo de las relaciones a String para el DTO
-        // Asegúrate de que los objetos relacionados (conductor, vehiculo, etc.) no sean
-        // null
-        // antes de intentar acceder a sus propiedades.
         if (envio.getConductor() != null) {
             dto.setConductorNombreCompleto(envio.getConductor().getPersona().getNombres() + " "
                     + envio.getConductor().getPersona().getApellidos());
-            // Asume que Conductor tiene una relación con Persona y Persona tiene Nombres y
-            // Apellidos
         } else {
             dto.setConductorNombreCompleto("N/A");
         }
@@ -118,35 +105,30 @@ public class EnvioService {
         if (envio.getVehiculo() != null) {
             dto.setVehiculoDescripcion(envio.getVehiculo().getMarca() + " - " + envio.getVehiculo().getModelo() + " ("
                     + envio.getVehiculo().getPlaca() + ")");
-            // Asume que Vehiculo tiene Marca, Modelo, Placa
         } else {
             dto.setVehiculoDescripcion("N/A");
         }
 
         if (envio.getRuta() != null) {
             dto.setRutaDescripcion(envio.getRuta().getSerialRuta() + " - " + envio.getRuta().getNombreRuta());
-            // Asume que Ruta tiene SerialRuta y NombreRuta
         } else {
             dto.setRutaDescripcion("N/A");
         }
 
         if (envio.getEstadoEnvio() != null) {
             dto.setEstadoEnvioNombre(envio.getEstadoEnvio().getEstado());
-            // Asume que EstadoEnvio tiene Estado
         } else {
             dto.setEstadoEnvioNombre("N/A");
         }
 
         if (envio.getPuntoAcopio() != null) {
             dto.setPuntoAcopioNombre(envio.getPuntoAcopio().getNombreAcopio());
-            // Asume que PuntoAcopio tiene NombreAcopio
         } else {
             dto.setPuntoAcopioNombre("N/A");
         }
 
         if (envio.getDistrito() != null) {
             dto.setDistritoDestinoNombre(envio.getDistrito().getNombreDistrito());
-            // Asume que Distrito tiene Distrito (nombre del distrito)
         } else {
             dto.setDistritoDestinoNombre("N/A");
         }
@@ -159,10 +141,6 @@ public class EnvioService {
         Envio envioExistente = envioRepository.findById(envioDto.getIdEnvio())
                 .orElseThrow(() -> new RuntimeException(
                         "Envío con ID " + envioDto.getIdEnvio() + " no encontrado para actualizar."));
-
-        // Actualizar los campos del envío existente con los datos del DTO
-        // Si un campo es null en el DTO, se mantiene el valor existente en la entidad,
-        // excepto para fechLlegada y observacion que se asignan directamente.
         if (envioDto.getIdConductor() != null) {
             envioExistente.setIdConductor(envioDto.getIdConductor());
         }
@@ -184,47 +162,32 @@ public class EnvioService {
         if (envioDto.getFechSalida() != null) {
             envioExistente.setFechSalida(Date.valueOf(envioDto.getFechSalida()));
         }
-
-        // FechLlegada puede ser null, se asigna directamente
         envioExistente
                 .setFechLlegada(envioDto.getFechLlegada() != null ? Date.valueOf(envioDto.getFechLlegada()) : null);
-
-        // Observacion puede ser null o String vacío, se asigna directamente
         envioExistente.setObservacion(envioDto.getObservacion());
-
-        // Guardar (actualizar) el envío existente
         Envio envioActualizado = envioRepository.save(envioExistente);
-
-        // Mapear la entidad actualizada a DTO y retornarlo
         return mapToEnvioListadoDto(envioActualizado);
     }
 
     @Transactional
     public void eliminarEnvio(Integer idEnvio) {
-        // Primero, verifica si el envío existe
         Envio envioAEliminar = envioRepository.findById(idEnvio)
                 .orElseThrow(() -> new RuntimeException("Envío con ID " + idEnvio + " no encontrado para eliminar."));
-
-        // 1. Obtener los productos asociados a este envío
-        // Se asume que DetalleEnvio tiene un campo 'producto' que es la entidad
-        // Productos
-        // y que Productos tiene un getIdProducto()
         List<DetalleEnvio> detalles = detalleEnvioRepository.findByEnvioIdEnvio(idEnvio);
-
-        // 2. Actualizar el estado de cada producto asociado a "En Almacén" (estado 1)
         for (DetalleEnvio detalle : detalles) {
             if (detalle.getProducto() != null) {
                 productoRepository.actualizarEstadoProducto(detalle.getProducto().getIdProducto(),
                         ESTADO_EN_ALMACEN_ID);
             }
         }
-
-        // 3. Eliminar los detalles de envío asociados a este envío
-        // Esto es crucial para romper la relación entre el envío y los productos
         detalleEnvioRepository.deleteByEnvioIdEnvio(idEnvio);
-
-        // 4. Finalmente, elimina el envío principal
         envioRepository.deleteById(idEnvio);
     }
 
+    public EnvioListadoDto obtenerEnvioPorId(Integer idEnvio) {
+        return obtenerTodosLosEnvios().stream()
+                .filter(envio -> envio.getIdEnvio().equals(idEnvio))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Envío con ID " + idEnvio + " no encontrado."));
+    }
 }
