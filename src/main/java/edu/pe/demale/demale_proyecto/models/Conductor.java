@@ -1,3 +1,4 @@
+// src/main/java/edu/pe/demale/demale_proyecto/models/Conductor.java
 package edu.pe.demale.demale_proyecto.models;
 
 import jakarta.persistence.*;
@@ -6,40 +7,37 @@ import jakarta.persistence.*;
 @Table(name = "conductor")
 public class Conductor {
 
-    @Id
-    @Column(name = "IdConductor")
-    private Integer idConductor;
-
     @OneToOne
-    @MapsId // Esto hace que use el mismo Id que Persona
-    @JoinColumn(name = "IdConductor")
+    @MapsId // Uses the ID of Persona as the primary key for Conductor
+    @JoinColumn(name = "IdConductor") // Maps to the column named IdConductor
     private Persona persona;
 
-    @Column(name = "Licencia", nullable = false, unique = true)
+    @Id
+    @Column(name = "IdConductor")
+    private Integer id; // This field is managed by JPA and linked to Persona's ID
+
+    @Column(name = "Licencia", nullable = false, unique = true) // Licencia must be unique
     private String licencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdRol", nullable = false)
     private Rol rol;
 
-    public Conductor() {
-    }
+    public Conductor() {}
 
-    // Constructor con todos los campos (opcional, pero útil)
-    public Conductor(Integer idConductor, String licencia, Persona persona, Rol rol) {
-        this.idConductor = idConductor;
-        this.licencia = licencia;
+    public Conductor(Persona persona, String licencia, Rol rol) {
         this.persona = persona;
+        this.licencia = licencia;
         this.rol = rol;
     }
-    // Getters y setters
 
-    public Integer getIdConductor() {
-        return idConductor;
+    // Getters and Setters
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdConductor(Integer idConductor) {
-        this.idConductor = idConductor;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Persona getPersona() {

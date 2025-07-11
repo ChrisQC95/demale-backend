@@ -1,13 +1,13 @@
+// src/main/java/edu/pe/demale/demale_proyecto/repositories/RolRepository.java
 package edu.pe.demale.demale_proyecto.repositories;
 
-import edu.pe.demale.demale_proyecto.models.Rol; // Asegúrate de que esta ruta sea correcta
+import edu.pe.demale.demale_proyecto.models.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional; // Necesario para métodos de búsqueda personalizados
+import java.util.Optional;
 
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Integer> {
-    // Si en algún momento necesitas buscar un Rol por su nombre, puedes añadir un método así:
-    Optional<Rol> findByNombreRol(String nombreRol); // 'nombreRol' es el nombre de la propiedad en tu entidad Rol
+    Optional<Rol> findByNombreRol(String nombreRol); // optional for assigning by name
 }
