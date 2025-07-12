@@ -2,6 +2,7 @@ package edu.pe.demale.demale_proyecto.dto;
 
 import lombok.Data;
 import java.sql.Date; // Para tipos de fecha SQL
+import java.util.List;
 
 @Data // Anotación de Lombok para generar getters, setters, toString, equals, hashCode
 public class EnvioUpdateDto {
@@ -15,4 +16,5 @@ public class EnvioUpdateDto {
     private String fechSalida; // String en formato "YYYY-MM-DD"
     private String fechLlegada; // Puede ser null, o una fecha cuando se actualice a "Entregado"
     private String observacion;
+    private List<HistorialPuntoDescansoDto> historialPuntosDescanso;
 }

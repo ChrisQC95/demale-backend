@@ -3,17 +3,26 @@ package edu.pe.demale.demale_proyecto.service;
 import edu.pe.demale.demale_proyecto.dto.EnvioCreacionDto;
 import edu.pe.demale.demale_proyecto.dto.EnvioListadoDto;
 import edu.pe.demale.demale_proyecto.dto.EnvioUpdateDto;
+import edu.pe.demale.demale_proyecto.dto.HistorialPuntoDescansoDto;
+import edu.pe.demale.demale_proyecto.dto.PuntoDescansoRegistroDto;
 import edu.pe.demale.demale_proyecto.models.Productos; // Asegúrate de importar la entidad DetalleEnvio
+import edu.pe.demale.demale_proyecto.models.PuntoDescanso;
 import edu.pe.demale.demale_proyecto.models.DetalleEnvio;
 import edu.pe.demale.demale_proyecto.models.Envio;
+import edu.pe.demale.demale_proyecto.models.HistorialPuntoDescanso;
 import edu.pe.demale.demale_proyecto.repositories.EnvioRepository;
+import edu.pe.demale.demale_proyecto.repositories.HistorialPuntoDescansoRepository;
 import edu.pe.demale.demale_proyecto.repositories.DetalleEnvioRepository;
 import edu.pe.demale.demale_proyecto.repositories.IProductosRepository;
+import edu.pe.demale.demale_proyecto.repositories.PuntoDescansoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Importante para la transacción
 
 import java.sql.Date; // Para convertir String a java.sql.Date
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,18 +32,25 @@ public class EnvioService {
     private final EnvioRepository envioRepository;
     private final DetalleEnvioRepository detalleEnvioRepository;
     private final IProductosRepository productoRepository;
+    private final HistorialPuntoDescansoRepository historialPuntoDescansoRepository;
+    private final PuntoDescansoRepository puntoDescansoRepository;
 
     // ID del estado "En Tránsito"
     private static final int ESTADO_EN_TRANSITO_ID = 2;
     private static final int ESTADO_EN_ALMACEN_ID = 1;
+    private static final int ESTADO_FINALIZADO_ID = 3;
 
     @Autowired
     public EnvioService(EnvioRepository envioRepository,
             DetalleEnvioRepository detalleEnvioRepository,
-            IProductosRepository productoRepository) {
+            IProductosRepository productoRepository,
+            HistorialPuntoDescansoRepository historialPuntoDescansoRepository,
+            PuntoDescansoRepository puntoDescansoRepository) {
         this.envioRepository = envioRepository;
         this.detalleEnvioRepository = detalleEnvioRepository;
         this.productoRepository = productoRepository;
+        this.historialPuntoDescansoRepository = historialPuntoDescansoRepository;
+        this.puntoDescansoRepository = puntoDescansoRepository;
     }
 
     @Transactional
@@ -83,7 +99,7 @@ public class EnvioService {
     }
 
     public List<EnvioListadoDto> obtenerTodosLosEnvios() {
-        List<Envio> envios = envioRepository.findAll();
+        List<Envio> envios = envioRepository.findAllWithDetails();
         return envios.stream()
                 .map(this::mapToEnvioListadoDto)
                 .collect(Collectors.toList());
@@ -181,6 +197,7 @@ public class EnvioService {
             }
         }
         detalleEnvioRepository.deleteByEnvioIdEnvio(idEnvio);
+        historialPuntoDescansoRepository.deleteByEnvioIdEnvio(idEnvio);
         envioRepository.deleteById(idEnvio);
     }
 
@@ -204,6 +221,54 @@ public class EnvioService {
         dto.setFechLlegada(envio.getFechLlegada() != null ? envio.getFechLlegada().toString() : null);
         dto.setObservacion(envio.getObservacion());
 
+        List<HistorialPuntoDescanso> historialEntities = historialPuntoDescansoRepository
+                .findByEnvioIdEnvioWithPuntoDescanso(idEnvio);
+        List<HistorialPuntoDescansoDto> historialDtos = historialEntities.stream()
+                .map(hist -> {
+                    HistorialPuntoDescansoDto histDto = new HistorialPuntoDescansoDto();
+                    histDto.setIdHistorialDescanso(hist.getIdHistorialDescanso());
+                    histDto.setIdEnvio(hist.getEnvio().getIdEnvio());
+                    histDto.setIdPuntoDescanso(hist.getPuntoDescanso().getIdPuntoDescanso());
+                    histDto.setNombrePuntoDescanso(hist.getPuntoDescanso().getNombrePuntoDescanso());
+                    histDto.setFechaHoraRegistro(hist.getFechaHoraRegistro());
+                    return histDto;
+                })
+                .collect(Collectors.toList());
+        dto.setHistorialPuntosDescanso(historialDtos);
+
         return dto;
+    }
+
+    @Transactional
+    public EnvioListadoDto registrarPuntoDescansoYFinalizarLlegada(Integer idEnvio,
+            PuntoDescansoRegistroDto registroDto) {
+        Envio envio = envioRepository.findById(idEnvio)
+                .orElseThrow(() -> new RuntimeException("Envío con ID " + idEnvio + " no encontrado."));
+
+        PuntoDescanso puntoDescanso = puntoDescansoRepository.findById(registroDto.getIdPuntoDescanso())
+                .orElseThrow(() -> new RuntimeException(
+                        "Punto de Descanso con ID " + registroDto.getIdPuntoDescanso() + " no encontrado."));
+
+        // Registrar en el historial
+        HistorialPuntoDescanso historial = new HistorialPuntoDescanso();
+        historial.setEnvio(envio);
+        historial.setPuntoDescanso(puntoDescanso);
+        historial.setFechaHoraRegistro(LocalDateTime.now());
+        historialPuntoDescansoRepository.save(historial);
+
+        if (registroDto.isLlegadaFinal()) {
+            envio.setFechLlegada(Date.valueOf(LocalDate.now()));
+            envio.setIdEstadoEnvio(ESTADO_FINALIZADO_ID);
+            envioRepository.save(envio);
+            List<DetalleEnvio> detalles = detalleEnvioRepository.findByEnvioIdEnvio(idEnvio);
+            for (DetalleEnvio detalle : detalles) {
+                if (detalle.getProducto() != null) {
+                    productoRepository.actualizarEstadoProducto(detalle.getProducto().getIdProducto(),
+                            ESTADO_FINALIZADO_ID);
+                }
+            }
+        }
+
+        return mapToEnvioListadoDto(envio);
     }
 }

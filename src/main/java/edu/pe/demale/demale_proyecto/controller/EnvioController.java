@@ -2,6 +2,7 @@ package edu.pe.demale.demale_proyecto.controller;
 
 import edu.pe.demale.demale_proyecto.dto.EnvioCreacionDto;
 import edu.pe.demale.demale_proyecto.dto.EnvioListadoDto;
+import edu.pe.demale.demale_proyecto.dto.PuntoDescansoRegistroDto;
 import edu.pe.demale.demale_proyecto.models.Envio;
 import edu.pe.demale.demale_proyecto.service.EnvioService;
 
@@ -113,6 +114,29 @@ public class EnvioController {
         } catch (Exception e) { // Captura cualquier otra excepción
             System.err.println("Error inesperado al eliminar el envío: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+        }
+    }
+
+    @PostMapping("/{idEnvio}/registrar-descanso")
+    public ResponseEntity<EnvioListadoDto> registrarPuntoDescanso(
+            @PathVariable Integer idEnvio,
+            @RequestBody PuntoDescansoRegistroDto registroDto) {
+
+        if (registroDto.getIdPuntoDescanso() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            EnvioListadoDto envioActualizado = envioService.registrarPuntoDescansoYFinalizarLlegada(idEnvio,
+                    registroDto);
+            return new ResponseEntity<>(envioActualizado, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            System.err.println("Error al registrar punto de descanso o finalizar llegada: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // O BAD_REQUEST si es por datos inválidos
+        } catch (Exception e) {
+            System.err
+                    .println("Error inesperado al registrar punto de descanso o finalizar llegada: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

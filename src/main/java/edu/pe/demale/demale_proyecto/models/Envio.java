@@ -2,6 +2,9 @@ package edu.pe.demale.demale_proyecto.models;
 
 import jakarta.persistence.*;
 import java.sql.Date; // Para tipos de fecha SQL
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "envios")
@@ -64,6 +67,10 @@ public class Envio {
     @ManyToOne
     @JoinColumn(name = "IdDistrito", insertable = false, updatable = false)
     private Distrito distrito;
+
+    @OneToMany(mappedBy = "envio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<HistorialPuntoDescanso> historialPuntosDescanso;
 
     public Envio() {
     }
@@ -210,5 +217,13 @@ public class Envio {
 
     public void setDistrito(Distrito distrito) {
         this.distrito = distrito;
+    }
+
+    public List<HistorialPuntoDescanso> getHistorialPuntosDescanso() {
+        return historialPuntosDescanso;
+    }
+
+    public void setHistorialPuntosDescanso(List<HistorialPuntoDescanso> historialPuntosDescanso) {
+        this.historialPuntosDescanso = historialPuntosDescanso;
     }
 }
