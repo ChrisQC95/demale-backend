@@ -58,17 +58,18 @@ public class EnvioController {
         }
     }
 
-    @GetMapping("/{idEnvio}")
-    public ResponseEntity<EnvioListadoDto> obtenerEnvioPorId(@PathVariable Integer idEnvio) {
+    @GetMapping("/{idEnvio}") // Maneja solicitudes GET a /api/envios/{idEnvio}
+    public ResponseEntity<EnvioUpdateDto> obtenerEnvioPorId(@PathVariable Integer idEnvio) { // <-- ¡Retorna
+                                                                                             // EnvioUpdateDto!
         try {
-            EnvioListadoDto envioDto = envioService.obtenerEnvioPorId(idEnvio);
-            return new ResponseEntity<>(envioDto, HttpStatus.OK); // 200 OK
-        } catch (RuntimeException e) { // Captura la excepción si el envío no se encuentra
+            EnvioUpdateDto envioDto = envioService.obtenerEnvioPorId(idEnvio);
+            return new ResponseEntity<>(envioDto, HttpStatus.OK);
+        } catch (RuntimeException e) {
             System.err.println("Error al obtener el envío por ID: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
-        } catch (Exception e) { // Captura cualquier otra excepción
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
             System.err.println("Error inesperado al obtener el envío por ID: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 Internal Server Error
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

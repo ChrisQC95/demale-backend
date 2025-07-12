@@ -184,10 +184,26 @@ public class EnvioService {
         envioRepository.deleteById(idEnvio);
     }
 
-    public EnvioListadoDto obtenerEnvioPorId(Integer idEnvio) {
-        return obtenerTodosLosEnvios().stream()
-                .filter(envio -> envio.getIdEnvio().equals(idEnvio))
-                .findFirst()
+    public EnvioUpdateDto obtenerEnvioPorId(Integer idEnvio) {
+        // Usamos findById para obtener la entidad completa.
+        // Si las relaciones son LAZY, se cargarán al acceder a ellas dentro de esta
+        // transacción.
+        Envio envio = envioRepository.findById(idEnvio)
                 .orElseThrow(() -> new RuntimeException("Envío con ID " + idEnvio + " no encontrado."));
+
+        // Mapear la entidad Envio a EnvioUpdateDto
+        EnvioUpdateDto dto = new EnvioUpdateDto();
+        dto.setIdEnvio(envio.getIdEnvio());
+        dto.setIdConductor(envio.getIdConductor());
+        dto.setIdVehiculo(envio.getIdVehiculo());
+        dto.setIdRuta(envio.getIdRuta());
+        dto.setIdEstadoEnvio(envio.getIdEstadoEnvio());
+        dto.setIdPuntoAcopio(envio.getIdPuntoAcopio());
+        dto.setIdDistrito(envio.getIdDistrito());
+        dto.setFechSalida(envio.getFechSalida() != null ? envio.getFechSalida().toString() : null);
+        dto.setFechLlegada(envio.getFechLlegada() != null ? envio.getFechLlegada().toString() : null);
+        dto.setObservacion(envio.getObservacion());
+
+        return dto;
     }
 }
